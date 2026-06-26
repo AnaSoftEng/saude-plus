@@ -1,4 +1,3 @@
-/* eslint-env jest */
 import { NIVEIS_ACESSO, usuarioTemNivel } from "./niveis-acesso";
 
 test("respeita a hierarquia de niveis de acesso", () => {

@@ -16,7 +16,7 @@
     "backend": "npm --workspace saude-plus-backend run start",
     "backend:check": "npm --workspace saude-plus-backend run check",
     "backend:test": "npm --workspace saude-plus-backend run test",
-    "lint": "node ./node_modules/eslint/bin/eslint.js --resolve-plugins-relative-to frontend backend/src frontend/src scripts --ext .js,.jsx",
+    "lint": "node ./node_modules/eslint/bin/eslint.js backend/src frontend/src scripts api --ext .js,.jsx",
     "format:check": "node scripts/check-format.js",
     "iniciar": "node scripts/start-dev.js",
     "compilar": "npm run frontend:build",
@@ -28,6 +28,9 @@
     "node": ">=22 <25"
   },
   "devDependencies": {
+    "eslint": "^9.39.4",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.5.0",
     "jsdom": "^27.4.0"
   }
 }

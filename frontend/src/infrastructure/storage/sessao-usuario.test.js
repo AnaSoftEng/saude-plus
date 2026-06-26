@@ -1,4 +1,3 @@
-/* eslint-env jest */
 import {
   CHAVE_TOKEN,
   CHAVE_USUARIO,
