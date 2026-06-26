@@ -1,6 +1,6 @@
 import { requisitarJson } from "./http-client";
 
-const DEBUG_RELATORIOS = process.env.REACT_APP_RELATORIOS_DEBUG === "true";
+const DEBUG_RELATORIOS = import.meta.env.REACT_APP_RELATORIOS_DEBUG === "true";
 
 function registrarDebug(evento, dados) {
   if (DEBUG_RELATORIOS) {

@@ -1,5 +1,5 @@
 function lerEnv(nome) {
-  return String(process.env[nome] || "").trim();
+  return String(import.meta.env[nome] || "").trim();
 }
 
 const GOOGLE_MAPS_API_KEY = lerEnv("REACT_APP_GOOGLE_MAPS_API_KEY");

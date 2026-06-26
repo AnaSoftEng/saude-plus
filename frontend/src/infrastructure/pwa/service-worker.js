@@ -9,7 +9,7 @@ async function registrarServiceWorker() {
     return null;
   }
 
-  if (process.env.NODE_ENV !== "production") {
+  if (!import.meta.env.PROD) {
     const registros = await navigator.serviceWorker.getRegistrations();
     await Promise.all(registros.map((registro) => registro.unregister()));
     return null;

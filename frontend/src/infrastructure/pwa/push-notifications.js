@@ -7,7 +7,7 @@ const CHAVE_PERMISSAO_PUSH = "saude_push_permission";
 const CHAVE_PUSH_SOLICITADO = "saude_push_permission_solicitada";
 const CHAVE_VAPID_PUBLIC_KEY = "saude_push_vapid_public_key";
 const PERMISSAO_ADIADA = "adiada";
-const VAPID_PUBLIC_KEY = process.env.REACT_APP_VAPID_PUBLIC_KEY || "";
+const VAPID_PUBLIC_KEY = import.meta.env.REACT_APP_VAPID_PUBLIC_KEY || "";
 
 function suportaNotificacoesPush() {
   return (

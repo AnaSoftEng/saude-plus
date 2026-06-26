@@ -1,7 +1,7 @@
 import { obterTokenSessao, removerUsuarioSessao } from "../storage/sessao-usuario";
 
 function obterApiBaseUrl() {
-  const configurado = String(process.env.REACT_APP_BACKEND_URL || "").replace(/\/+$/, "");
+  const configurado = String(import.meta.env.REACT_APP_BACKEND_URL || "").replace(/\/+$/, "");
   const rodandoLocal =
     typeof window !== "undefined" &&
     ["localhost", "127.0.0.1"].includes(window.location.hostname);

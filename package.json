@@ -12,7 +12,7 @@
     "frontend": "npm --workspace saude-plus-frontend run iniciar",
     "frontend:build": "npm --workspace saude-plus-frontend run compilar",
     "frontend:serve": "node scripts/serve-frontend-build.js",
-    "frontend:test": "npm --workspace saude-plus-frontend run testar --",
+    "frontend:test": "npm --workspace saude-plus-frontend run testar",
     "backend": "npm --workspace saude-plus-backend run start",
     "backend:check": "npm --workspace saude-plus-backend run check",
     "backend:test": "npm --workspace saude-plus-backend run test",
@@ -20,11 +20,14 @@
     "format:check": "node scripts/check-format.js",
     "iniciar": "node scripts/start-dev.js",
     "compilar": "npm run frontend:build",
-    "testar": "npm run backend:test && npm run frontend:test -- --watchAll=false --runInBand",
+    "testar": "npm run backend:test && npm run frontend:test",
     "vercel:function:check": "node scripts/check-vercel-function.js",
-    "deploy:check": "npm run backend:check && npm run backend:test && npm run frontend:test -- --watchAll=false --runInBand && npm run frontend:build && npm run lint && npm run vercel:function:check && npm run format:check"
+    "deploy:check": "npm run backend:check && npm run backend:test && npm run frontend:test && npm run frontend:build && npm run lint && npm run vercel:function:check && npm run format:check"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22 <25"
+  },
+  "devDependencies": {
+    "jsdom": "^27.4.0"
   }
 }
