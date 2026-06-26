@@ -1,9 +1,7 @@
 const { AppError } = require("../../domain/errors/app-error");
 const { NIVEIS_ACESSO } = require("../../domain/value-objects/niveis-acesso");
 const { normalizarCategoriaDocumento } = require("../../domain/entities/exame");
-
-const TAMANHO_MAXIMO_ARQUIVO_BYTES = 2 * 1024 * 1024;
-const TAMANHO_MAXIMO_DATA_URL = 3 * 1024 * 1024;
+const { validarArquivoResultado } = require("../../domain/value-objects/arquivo-resultado");
 
 function normalizarArquivosResultado(dadosResultado = {}) {
   if (Array.isArray(dadosResultado.arquivos) && dadosResultado.arquivos.length > 0) {
@@ -28,12 +26,16 @@ function montarPayloadResultado(exame, dadosResultado, arquivo) {
   );
   const agora = new Date().toISOString();
 
+  const arquivoNormalizado = validarArquivoResultado(arquivo, {
+    fallbackNome: arquivo.nomeArquivo || `${exame.tipo || "resultado"}-${exame.id}.pdf`,
+  });
+
   return {
     status: "liberado",
     resultado_disponivel: true,
     resultado_categoria: categoriaDocumento,
     resultado_nome_arquivo:
-      arquivo.nomeArquivo || `${exame.tipo || "resultado"}-${exame.id}.pdf`,
+      arquivoNormalizado.nomeArquivo,
     resultado_descricao:
       arquivo.descricao ||
       dadosResultado.descricao ||
@@ -41,25 +43,10 @@ function montarPayloadResultado(exame, dadosResultado, arquivo) {
     resultado_anexado_em: agora,
     resultado_anexado_por: dadosResultado.anexadoPor || "admin_clinica",
     resultado_anexado_por_nome: dadosResultado.anexadoPorNome || "",
-    resultado_arquivo_data_url: arquivo.arquivoDataUrl || "",
-    resultado_arquivo_tipo: arquivo.tipoArquivo || "",
-    resultado_arquivo_tamanho: Number(arquivo.tamanhoArquivo || 0),
+    resultado_arquivo_data_url: arquivoNormalizado.arquivoDataUrl,
+    resultado_arquivo_tipo: arquivoNormalizado.tipoArquivo,
+    resultado_arquivo_tamanho: arquivoNormalizado.tamanhoArquivo,
   };
-}
-
-function validarArquivoResultado(arquivo = {}) {
-  if (!arquivo.arquivoDataUrl && !arquivo.nomeArquivo) {
-    throw new AppError("Informe ao menos um arquivo para anexar ao resultado.", 422, "ARQUIVO_INVALIDO");
-  }
-
-  const tamanhoArquivo = Number(arquivo.tamanhoArquivo || 0);
-  if (tamanhoArquivo > TAMANHO_MAXIMO_ARQUIVO_BYTES) {
-    throw new AppError("O arquivo do resultado excede 2 MB.", 413, "ARQUIVO_MUITO_GRANDE");
-  }
-
-  if (String(arquivo.arquivoDataUrl || "").length > TAMANHO_MAXIMO_DATA_URL) {
-    throw new AppError("O arquivo do resultado excede o tamanho permitido.", 413, "ARQUIVO_MUITO_GRANDE");
-  }
 }
 
 function usuarioPodeAnexarResultado(usuario, exame) {
@@ -95,7 +82,6 @@ function criarAnexarResultadoExame({ exameRepository }) {
     }
 
     const arquivos = normalizarArquivosResultado(dadosResultado);
-    arquivos.forEach(validarArquivoResultado);
     const [primeiroArquivo, ...arquivosExtras] = arquivos;
     const exameAtualizado = await exameRepository.atualizar(
       exameId,

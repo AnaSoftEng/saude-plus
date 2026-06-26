@@ -8,7 +8,7 @@ Esta reorganizacao separa o app em camadas para deixar dependencias e responsabi
 - `presentation`: telas e componentes React. Deve depender de `application`, nunca de detalhes de API diretamente.
 - `application`: casos de uso do sistema, como autenticar usuario, listar agenda e montar relatorios.
 - `domain`: regras puras e conceitos centrais, como niveis de acesso e montagem de consultas locais.
-- `infrastructure`: detalhes externos, como APIs HTTP, localStorage e banco de dados.
+- `infrastructure`: detalhes externos, como APIs HTTP, sessao do navegador e PWA.
 
 ## Fluxo de dependencia
 

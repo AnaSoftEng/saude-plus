@@ -48,8 +48,16 @@ Variaveis principais:
 ```bash
 PORT=3333
 CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+AUTH_RATE_LIMIT_JANELA_MS=900000
+AUTH_RATE_LIMIT_MAX_TENTATIVAS=20
 JWT_SECRET=substitua-por-um-segredo-local-com-32-caracteres-ou-mais
 RECOVERY_SECRET=defina-um-codigo-temporario-apenas-para-desenvolvimento
+ALLOW_DIRECT_PASSWORD_RECOVERY=false
+PASSWORD_RECOVERY_CODE_TTL_MINUTES=10
+PASSWORD_RECOVERY_MAX_ATTEMPTS=5
+PASSWORD_RECOVERY_RESEND_INTERVAL_SECONDS=45
+PASSWORD_RECOVERY_EMAIL_WEBHOOK_URL=
+PASSWORD_RECOVERY_SMS_WEBHOOK_URL=
 AUTH_COOKIE_ENABLED=false
 REPOSITORY_DRIVER=memory
 REACT_APP_BACKEND_URL=http://localhost:3333
@@ -136,6 +144,15 @@ Scripts do backend:
 - `npm --prefix backend run db:migrate`: executa migrations SQL.
 - `npm --prefix backend run user:password -- email@teste.com NovaSenhaForte`: redefine senha local de um usuario seed.
 
+## Recuperacao De Senha
+
+O fluxo real usa duas chamadas publicas:
+
+- `POST /api/auth/recuperar-senha/solicitar` com `{ "email": "usuario@dominio.com", "canal": "email" }` ou `{ "email": "usuario@dominio.com", "canal": "sms" }`.
+- `POST /api/auth/recuperar-senha/confirmar` com `{ "email": "usuario@dominio.com", "codigoRecuperacao": "123456", "novaSenha": "NovaSenhaForte" }`.
+
+O codigo fica vinculado ao email da conta, armazenado como hash temporario, expira por `PASSWORD_RECOVERY_CODE_TTL_MINUTES`, bloqueia apos `PASSWORD_RECOVERY_MAX_ATTEMPTS` tentativas e limita novos envios a cada `PASSWORD_RECOVERY_RESEND_INTERVAL_SECONDS` segundos. Em desenvolvimento, sem webhook configurado, o codigo aparece no console do backend. Em producao, configure `PASSWORD_RECOVERY_EMAIL_WEBHOOK_URL` e/ou `PASSWORD_RECOVERY_SMS_WEBHOOK_URL` para integrar com o provedor de email/SMS.
+
 ## Banco De Dados
 
 Em desenvolvimento, o sistema pode usar repositories em memoria:
@@ -220,7 +237,15 @@ REPOSITORY_DRIVER=postgres
 DATABASE_URL=sua_url_postgres
 JWT_SECRET=um_segredo_forte_com_32_caracteres_ou_mais
 RECOVERY_SECRET=outro_segredo_forte_com_32_caracteres_ou_mais
+ALLOW_DIRECT_PASSWORD_RECOVERY=false
+PASSWORD_RECOVERY_CODE_TTL_MINUTES=10
+PASSWORD_RECOVERY_MAX_ATTEMPTS=5
+PASSWORD_RECOVERY_RESEND_INTERVAL_SECONDS=45
+PASSWORD_RECOVERY_EMAIL_WEBHOOK_URL=https://seu-provedor/email
+PASSWORD_RECOVERY_SMS_WEBHOOK_URL=https://seu-provedor/sms
 CORS_ORIGINS=https://seu-dominio.vercel.app
+AUTH_RATE_LIMIT_JANELA_MS=900000
+AUTH_RATE_LIMIT_MAX_TENTATIVAS=20
 AUTH_COOKIE_ENABLED=true
 COOKIE_SECURE=true
 COOKIE_SAMESITE=Lax
@@ -384,6 +409,10 @@ npm run deploy:check
 - Nunca versione `.env` com segredos reais.
 - Use `JWT_SECRET` forte fora do desenvolvimento.
 - Configure `RECOVERY_SECRET` fora do repositorio.
-- Em producao, revise `CORS_ORIGINS` e habilite cookie HttpOnly quando aplicavel.
+- Em producao, revise `CORS_ORIGINS` e use cookie HttpOnly/Secure para sessao.
+- Nao persista token de sessao em `localStorage`.
+- Mantenha `ALLOW_DIRECT_PASSWORD_RECOVERY=false` fora de desenvolvimento.
+- Ajuste `AUTH_RATE_LIMIT_*` para limitar tentativas de login e recuperacao de senha.
+- Anexos de resultados de exames aceitam apenas PDF, PNG, JPEG e TXT no MVP atual.
 - Arquivos em `backend/data/*.json`, logs e builds sao artefatos locais.
 - Consulte [SECURITY.md](./SECURITY.md) para regras de operacao segura e relato de vulnerabilidades.

@@ -1,24 +1,30 @@
 const CHAVE_USUARIO = "saude_usuario";
 const CHAVE_TOKEN = "saude_token";
 
+function obterStorageSessao() {
+  return typeof sessionStorage === "undefined" ? localStorage : sessionStorage;
+}
+
 function salvarUsuarioSessao(usuario, token = "") {
-  localStorage.setItem(CHAVE_USUARIO, JSON.stringify(usuario));
+  obterStorageSessao().setItem(CHAVE_USUARIO, JSON.stringify(usuario));
   if (token) {
-    localStorage.setItem(CHAVE_TOKEN, token);
+    obterStorageSessao().setItem(CHAVE_TOKEN, token);
   }
 }
 
 function removerUsuarioSessao() {
+  obterStorageSessao().removeItem(CHAVE_USUARIO);
+  obterStorageSessao().removeItem(CHAVE_TOKEN);
   localStorage.removeItem(CHAVE_USUARIO);
   localStorage.removeItem(CHAVE_TOKEN);
 }
 
 function existeUsuarioSessao() {
-  return !!localStorage.getItem(CHAVE_USUARIO);
+  return !!obterStorageSessao().getItem(CHAVE_USUARIO);
 }
 
 function obterUsuarioSessao() {
-  const dados = localStorage.getItem(CHAVE_USUARIO);
+  const dados = obterStorageSessao().getItem(CHAVE_USUARIO);
   if (!dados) return null;
 
   try {
@@ -30,7 +36,7 @@ function obterUsuarioSessao() {
 }
 
 function obterTokenSessao() {
-  return localStorage.getItem(CHAVE_TOKEN) || "";
+  return obterStorageSessao().getItem(CHAVE_TOKEN) || "";
 }
 
 export {

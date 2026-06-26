@@ -1,7 +1,13 @@
-// TELA: Agendar consulta — alinhada à home do paciente (header azul, cards brancos, botões grandes)
-// Horários e confirmação via camada de aplicação consumindo a API.
-
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Building2,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  MapPin,
+  MessageSquareText,
+  Stethoscope,
+} from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ouvirClinicasAtualizadas } from "../../application/clinicas/clinicas-eventos";
 import { buscarClinicaPorId } from "../../application/clinicas/clinicas-use-cases";
@@ -109,6 +115,11 @@ function AgendarConsulta() {
     }
   }, [clinica, especialidade]);
 
+  const horarioSelecionado = useMemo(
+    () => horarios.find((h) => h.id === horarioId),
+    [horarioId, horarios]
+  );
+
   function aoVoltar() {
     navigate("/paciente/inicio");
   }
@@ -145,35 +156,40 @@ function AgendarConsulta() {
 
   if (carregandoClinica) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
-        <p className="text-gray-500 text-sm">Carregando dados da clínica...</p>
+      <div className="flex min-h-screen items-center justify-center bg-[#eef8f7] px-6">
+        <p className="text-sm font-medium text-slate-500">Carregando dados da clínica...</p>
       </div>
     );
   }
 
   if (!clinicaIdParam || !clinica) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6 relative">
-        <div className="absolute right-5 top-10 bg-blue-400 rounded-full">
+      <div className="relative flex min-h-screen flex-col items-center justify-center bg-[#eef8f7] px-6">
+        <div className="absolute right-5 top-10 rounded-lg bg-blue-500">
           <MenuUsuarioPaciente />
         </div>
-        <p className="text-gray-600 text-center mb-6">
-          Escolha uma clínica na lista para continuar com o agendamento.
-        </p>
-        <button
-          type="button"
-          onClick={() => navigate("/paciente/inicio")}
-          className="bg-blue-400 hover:bg-blue-500 text-white font-bold px-8 py-3 rounded-xl"
-        >
-          Ver clínicas
-        </button>
+        <div className="max-w-sm text-center">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-lg bg-blue-50 text-blue-600 ring-1 ring-blue-100">
+            <Building2 className="h-7 w-7" aria-hidden="true" />
+          </div>
+          <p className="mb-6 text-slate-600">
+            Escolha uma clínica na lista para continuar com o agendamento.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/paciente/inicio")}
+            className="rounded-lg bg-blue-500 px-8 py-3 font-bold text-white transition hover:bg-blue-600"
+          >
+            Ver clínicas
+          </button>
+        </div>
       </div>
     );
   }
 
   if (!clinica.aberta) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="flex min-h-screen flex-col bg-[#eef8f7]">
         <CabecalhoApp
           compacto
           fixo={false}
@@ -184,7 +200,7 @@ function AgendarConsulta() {
           acao={<MenuUsuarioPaciente />}
         />
         <div className="p-6 text-center">
-          <p className="text-gray-600">
+          <p className="text-slate-600">
             Esta unidade não está recebendo agendamentos no momento.
           </p>
         </div>
@@ -192,161 +208,230 @@ function AgendarConsulta() {
     );
   }
 
-  const horarioSelecionado = horarios.find((h) => h.id === horarioId);
-
   return (
-    <div className="min-h-screen bg-gray-50 pb-28">
+    <div className="min-h-screen bg-[#eef8f7] pb-32">
       <CabecalhoApp
         compacto
         aoVoltar={aoVoltar}
         textoVoltar="Voltar às clínicas"
         voltarSomenteIcone
         titulo="Agendar consulta"
-        descricao="Escolha a data e o horário"
+        descricao="Escolha especialidade, data e horário"
         acao={<MenuUsuarioPaciente />}
       />
 
-      <main className="app-content-narrow space-y-5">
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div
-            className={`h-1.5 w-full ${clinica.aberta ? "bg-green-400" : "bg-gray-300"}`}
-          />
-          <div className="p-5 flex gap-4">
-            <FotoClinica
-              src={clinica.fotoPerfil}
-              nome={clinica.nome}
-              className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-blue-50 text-2xl font-bold text-blue-500"
-            />
-            <div>
-              <h2 className="text-base font-bold text-gray-800">{clinica.nome}</h2>
-              <p className="text-blue-400 text-sm font-medium">{clinica.bairro}</p>
-              <p className="text-gray-500 text-xs mt-1 flex items-start gap-1">
-                <span>Localização</span> {clinica.endereco}
-              </p>
-            </div>
-          </div>
-        </section>
+      <main className="app-content-narrow">
+        <div className="grid gap-5 lg:grid-cols-[1fr_18rem] lg:items-start">
+          <div className="space-y-5">
+            <section className="overflow-hidden rounded-lg border border-blue-100 bg-white shadow-sm shadow-blue-950/5">
+              <div className="h-1 w-full bg-blue-500" />
+              <div className="p-5">
+                <div className="flex gap-4">
+                  <FotoClinica
+                    src={clinica.fotoPerfil}
+                    nome={clinica.nome}
+                    className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-blue-50 text-2xl font-bold text-blue-600 ring-1 ring-blue-100"
+                  />
+                  <div className="min-w-0">
+                    <h2 className="text-lg font-bold leading-tight text-slate-900">
+                      {clinica.nome}
+                    </h2>
+                    <p className="mt-1 font-semibold text-blue-600">{clinica.bairro}</p>
+                    <p className="mt-2 flex items-start gap-2 text-sm leading-5 text-slate-500">
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" aria-hidden="true" />
+                      <span>{clinica.endereco}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
 
-        <section>
-          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-3">
-            Especialidade
-          </p>
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {clinica.especialidades.map((esp) => (
-              <button
-                key={esp}
-                type="button"
-                onClick={() => setEspecialidade(esp)}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  especialidade === esp
-                    ? "bg-blue-400 text-white shadow-md"
-                    : "bg-white text-gray-600 border border-gray-200 hover:border-blue-300"
-                }`}
-              >
-                {esp}
-              </button>
-            ))}
-          </div>
-        </section>
+            <section className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm shadow-blue-950/5">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                  <Stethoscope className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-slate-900">Especialidade</h2>
+                  <p className="text-sm text-slate-500">Selecione o tipo de atendimento</p>
+                </div>
+              </div>
 
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Data da consulta
-          </label>
-          <input
-            type="date"
-            min={dataMinimaHoje()}
-            value={data}
-            onChange={(e) => setData(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-          />
-          {data && (
-            <p className="text-gray-500 text-sm mt-2 capitalize">
-              {formatarDataPt(data)}
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                {clinica.especialidades.map((esp) => (
+                  <button
+                    key={esp}
+                    type="button"
+                    onClick={() => setEspecialidade(esp)}
+                    className={`flex-shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
+                      especialidade === esp
+                        ? "bg-blue-500 text-white shadow-sm shadow-blue-950/10"
+                        : "border border-blue-100 bg-blue-50/40 text-slate-600 hover:border-blue-300 hover:bg-white"
+                    }`}
+                  >
+                    {esp}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm shadow-blue-950/5">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                  <CalendarDays className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-slate-900">Data da consulta</h2>
+                  <p className="text-sm text-slate-500">A partir de hoje</p>
+                </div>
+              </div>
+
+              <input
+                type="date"
+                min={dataMinimaHoje()}
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+                className="w-full rounded-lg border border-blue-100 bg-blue-50/40 px-4 py-3 text-base text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              {data && (
+                <p className="mt-2 text-sm capitalize text-slate-500">
+                  {formatarDataPt(data)}
+                </p>
+              )}
+            </section>
+
+            <section className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm shadow-blue-950/5">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                  <Clock3 className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-slate-900">Horários disponíveis</h2>
+                  <p className="text-sm text-slate-500">
+                    Horários riscados já estão ocupados
+                  </p>
+                </div>
+              </div>
+
+              {carregandoHorarios ? (
+                <p className="py-6 text-center text-sm text-slate-500">Carregando...</p>
+              ) : (
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                  {horarios.map((slot) => (
+                    <button
+                      key={slot.id}
+                      type="button"
+                      disabled={!slot.disponivel}
+                      onClick={() => slot.disponivel && setHorarioId(slot.id)}
+                      className={`min-h-12 rounded-lg text-sm font-bold transition ${
+                        !slot.disponivel
+                          ? "cursor-not-allowed bg-slate-100 text-slate-400 line-through"
+                          : horarioId === slot.id
+                            ? "bg-blue-500 text-white shadow-sm shadow-blue-950/10 ring-2 ring-blue-200"
+                            : "border border-blue-100 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50/50 active:scale-95"
+                      }`}
+                    >
+                      {slot.hora}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            <section className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm shadow-blue-950/5">
+              <label className="mb-2 flex items-center gap-2 text-sm font-bold text-slate-800">
+                <MessageSquareText className="h-4 w-4 text-blue-500" aria-hidden="true" />
+                Observações
+              </label>
+              <textarea
+                value={observacoes}
+                onChange={(e) => setObservacoes(e.target.value)}
+                placeholder="Ex.: primeira consulta, acompanhamento..."
+                rows={3}
+                className="w-full resize-none rounded-lg border border-blue-100 bg-blue-50/40 px-4 py-3 text-base text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+            </section>
+
+            {erroAcao && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+                <p className="text-sm text-red-600">{erroAcao}</p>
+              </div>
+            )}
+          </div>
+
+          <aside className="hidden rounded-lg border border-blue-100 bg-white p-4 shadow-sm shadow-blue-950/5 lg:sticky lg:top-28 lg:block">
+            <p className="text-xs font-bold uppercase tracking-wide text-blue-600">
+              Resumo
             </p>
-          )}
-        </section>
-
-        <section>
-          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-3">
-            Horários disponíveis
-          </p>
-          {carregandoHorarios ? (
-            <p className="text-gray-500 text-sm py-6 text-center">Carregando…</p>
-          ) : (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-              {horarios.map((slot) => (
-                <button
-                  key={slot.id}
-                  type="button"
-                  disabled={!slot.disponivel}
-                  onClick={() => slot.disponivel && setHorarioId(slot.id)}
-                  className={`py-3 rounded-xl text-sm font-semibold transition-all ${
-                    !slot.disponivel
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed line-through"
-                      : horarioId === slot.id
-                        ? "bg-blue-400 text-white shadow-md ring-2 ring-blue-200"
-                        : "bg-white border border-gray-200 text-gray-700 hover:border-blue-300 active:scale-95"
-                  }`}
-                >
-                  {slot.hora}
-                </button>
-              ))}
+            <div className="mt-4 space-y-4 text-sm">
+              <div>
+                <p className="font-bold text-slate-900">{clinica.nome}</p>
+                <p className="text-slate-500">{clinica.bairro}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                  Consulta
+                </p>
+                <p className="mt-1 font-semibold text-slate-700">{especialidade}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                  Data
+                </p>
+                <p className="mt-1 capitalize text-slate-700">{formatarDataPt(data)}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                  Horário
+                </p>
+                <p className="mt-1 text-lg font-bold text-blue-600">
+                  {horarioSelecionado?.hora || "--:--"}
+                </p>
+              </div>
             </div>
-          )}
-          <p className="text-gray-400 text-xs mt-3">
-            Horários riscados já estáo ocupados ou indisponíveis.
-          </p>
-        </section>
-
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Observações (opcional)
-          </label>
-          <textarea
-            value={observacoes}
-            onChange={(e) => setObservacoes(e.target.value)}
-            placeholder="Ex.: primeira consulta, acompanhamento..."
-            rows={3}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
-          />
-        </section>
-
-        {erroAcao && (
-          <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-            <p className="text-red-600 text-sm">{erroAcao}</p>
-          </div>
-        )}
+          </aside>
+        </div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-gray-100 bg-white/95 px-4 pt-4 shadow-lg backdrop-blur safe-bottom-nav">
-        <div className="mx-auto w-full max-w-3xl">
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-blue-100 bg-white/95 px-4 pt-3 shadow-lg shadow-blue-950/10 backdrop-blur safe-bottom-nav">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 text-sm">
+            <p className="truncate font-bold text-slate-900">
+              {especialidade || "Selecione a especialidade"}
+            </p>
+            <p className="truncate text-slate-500">
+              {horarioSelecionado?.hora
+                ? `${formatarDataPt(data)} às ${horarioSelecionado.hora}`
+                : "Escolha um horário disponível"}
+            </p>
+          </div>
           <button
             type="button"
-            disabled={
-              !horarioSelecionado?.disponivel || enviando || carregandoHorarios
-            }
+            disabled={!horarioSelecionado?.disponivel || enviando || carregandoHorarios}
             onClick={aoConfirmar}
-            className="w-full rounded-xl bg-blue-400 py-4 text-base font-bold text-white transition hover:bg-blue-500 active:scale-[0.98] disabled:bg-gray-200 disabled:text-gray-400 sm:text-lg"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue-500 px-6 text-base font-bold text-white shadow-sm shadow-blue-950/10 transition hover:bg-blue-600 active:scale-[0.98] disabled:bg-slate-200 disabled:text-slate-400 sm:w-auto"
           >
+            <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
             {enviando ? "Confirmando..." : "Confirmar agendamento"}
           </button>
         </div>
       </div>
 
       {sucesso && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40">
-          <div className="bg-white rounded-3xl shadow-xl max-w-sm w-full p-8 text-center">
-            <div className="text-5xl mb-4">✓</div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-6">
+          <div className="w-full max-w-sm rounded-lg bg-white p-7 text-center shadow-xl shadow-slate-950/20">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
+              <CheckCircle2 className="h-8 w-8" aria-hidden="true" />
+            </div>
+            <h3 className="mb-2 text-xl font-bold text-slate-900">
               Agendamento registrado
             </h3>
-            <p className="text-gray-600 text-sm mb-6">
+            <p className="mb-6 text-sm leading-6 text-slate-600">
               {clinica.nome}
               <br />
               {formatarDataPt(data)} às {horarioSelecionado?.hora}
               <br />
-              <span className="text-blue-400 font-medium">{especialidade}</span>
+              <span className="font-bold text-blue-600">{especialidade}</span>
             </p>
             <button
               type="button"
@@ -354,7 +439,7 @@ function AgendarConsulta() {
                 setSucesso(false);
                 navigate("/paciente/inicio");
               }}
-              className="w-full bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 rounded-xl"
+              className="w-full rounded-lg bg-blue-500 py-3 font-bold text-white transition hover:bg-blue-600"
             >
               Voltar ao início
             </button>

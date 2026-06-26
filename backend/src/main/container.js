@@ -25,6 +25,13 @@ const { criarConsultaRepositoryMemory } = require("../infrastructure/repositorie
 const { criarExameRepositoryMemory } = require("../infrastructure/repositories/memory/exame-repository-memory");
 const { criarUsuarioRepositoryMemory } = require("../infrastructure/repositories/memory/usuario-repository-memory");
 const { criarPushNotifications } = require("../infrastructure/notifications/push-notifications");
+const { criarRecuperacaoSenhaSender } = require("../infrastructure/notifications/recuperacao-senha-sender");
+const {
+  criarRecuperacaoSenhaRepositoryMemory,
+} = require("../infrastructure/security/recuperacao-senha-repository-memory");
+const {
+  criarRecuperacaoSenhaRepositoryPostgres,
+} = require("../infrastructure/security/recuperacao-senha-repository-postgres");
 
 function criarContainer(env = {}) {
   let pool = null;
@@ -60,6 +67,16 @@ function criarContainer(env = {}) {
     subscriptions: pushSubscriptions,
     pool,
   });
+  const recuperacaoSenhaRepository = pool
+    ? criarRecuperacaoSenhaRepositoryPostgres(pool)
+    : criarRecuperacaoSenhaRepositoryMemory();
+  const recuperacaoSenhaSender = criarRecuperacaoSenhaSender({ env });
+  const recuperarSenha = criarRecuperarSenha({
+    usuarioRepository,
+    recuperacaoSenhaRepository,
+    recuperacaoSenhaSender,
+    env,
+  });
 
   return {
     repositories: {
@@ -73,7 +90,9 @@ function criarContainer(env = {}) {
     pool,
     useCases: {
       autenticarUsuario: criarAutenticarUsuario({ usuarioRepository, env }),
-      recuperarSenha: criarRecuperarSenha({ usuarioRepository, env }),
+      recuperarSenha,
+      solicitarRecuperacaoSenha: recuperarSenha.solicitarCodigo,
+      confirmarRecuperacaoSenha: recuperarSenha.confirmarCodigo,
       listarUsuarios: criarListarUsuarios({ usuarioRepository }),
       salvarUsuario: criarSalvarUsuario({ usuarioRepository }),
       listarClinicas: criarListarClinicas({ clinicaRepository }),

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { realizarLogin, recuperarSenha } from "../../application/auth/auth-service";
+import {
+  confirmarRecuperacaoSenha,
+  realizarLogin,
+  solicitarRecuperacaoSenha,
+} from "../../application/auth/auth-service";
 import { usarDispositivo } from "../../infrastructure/device/use-dispositivo";
 import LogoSaudePlus from "../components/logo-saude-plus";
 
@@ -21,6 +25,8 @@ function Login() {
   const [mensagem, setMensagem] = useState("");
   const [senhaVisivel, setSenhaVisivel] = useState(false);
   const [modoRecuperacao, setModoRecuperacao] = useState(false);
+  const [etapaRecuperacao, setEtapaRecuperacao] = useState("solicitar");
+  const [canalRecuperacao, setCanalRecuperacao] = useState("email");
 
   function validarFormularioLogin() {
     if (!email.trim()) return "Por favor, informe seu e-mail.";
@@ -32,9 +38,17 @@ function Login() {
     return "";
   }
 
-  function validarFormularioRecuperacao() {
+  function validarSolicitacaoRecuperacao() {
     if (!email.trim()) return "Informe o e-mail cadastrado.";
     if (!emailValido(email)) return "Informe um e-mail valido.";
+    return "";
+  }
+
+  function validarConfirmacaoRecuperacao() {
+    const codigoLimpo = codigoRecuperacao.trim();
+    if (!email.trim()) return "Informe o e-mail cadastrado.";
+    if (!emailValido(email)) return "Informe um e-mail valido.";
+    if (codigoLimpo.length < 6) return "Informe o codigo recebido.";
     if (novaSenha.length < 8) {
       return "A nova senha deve ter pelo menos 8 caracteres.";
     }
@@ -75,12 +89,12 @@ function Login() {
     }
   }
 
-  async function aoRecuperarSenha(e) {
+  async function aoSolicitarCodigoRecuperacao(e) {
     e.preventDefault();
     setErro("");
     setMensagem("");
 
-    const mensagemErro = validarFormularioRecuperacao();
+    const mensagemErro = validarSolicitacaoRecuperacao();
     if (mensagemErro) {
       setErro(mensagemErro);
       return;
@@ -88,7 +102,38 @@ function Login() {
 
     setCarregando(true);
     try {
-      const resultado = await recuperarSenha(email.trim(), novaSenha, codigoRecuperacao.trim());
+      const resultado = await solicitarRecuperacaoSenha(email.trim(), canalRecuperacao);
+      setEtapaRecuperacao("confirmar");
+      setMensagem(
+        resultado.destinoMascarado
+          ? `Codigo enviado para ${resultado.destinoMascarado}.`
+          : resultado.mensagem || "Se o email estiver cadastrado, enviaremos um codigo."
+      );
+    } catch (err) {
+      setErro(err.message || "Nao foi possivel enviar o codigo.");
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  async function aoConfirmarRecuperacaoSenha(e) {
+    e.preventDefault();
+    setErro("");
+    setMensagem("");
+
+    const mensagemErro = validarConfirmacaoRecuperacao();
+    if (mensagemErro) {
+      setErro(mensagemErro);
+      return;
+    }
+
+    setCarregando(true);
+    try {
+      const resultado = await confirmarRecuperacaoSenha(
+        email.trim(),
+        codigoRecuperacao.trim(),
+        novaSenha
+      );
       setSenha("");
       setNovaSenha("");
       setConfirmarNovaSenha("");
@@ -105,6 +150,7 @@ function Login() {
   function abrirRecuperacao() {
     setErro("");
     setMensagem("");
+    setEtapaRecuperacao("solicitar");
     setModoRecuperacao(true);
   }
 
@@ -114,6 +160,8 @@ function Login() {
     setNovaSenha("");
     setConfirmarNovaSenha("");
     setCodigoRecuperacao("");
+    setEtapaRecuperacao("solicitar");
+    setCanalRecuperacao("email");
     setModoRecuperacao(false);
   }
 
@@ -203,7 +251,14 @@ function Login() {
   );
 
   const formularioRecuperacao = (
-    <form onSubmit={aoRecuperarSenha} noValidate>
+    <form
+      onSubmit={
+        etapaRecuperacao === "solicitar"
+          ? aoSolicitarCodigoRecuperacao
+          : aoConfirmarRecuperacaoSenha
+      }
+      noValidate
+    >
       <div className="mb-5">
         <label className="mb-2 block text-sm font-semibold text-gray-700">
           E-mail cadastrado
@@ -218,47 +273,96 @@ function Login() {
         />
       </div>
 
-      <div className="mb-5">
-        <label className="mb-2 block text-sm font-semibold text-gray-700">
-          Nova senha
-        </label>
-        <input
-          type="password"
-          value={novaSenha}
-          onChange={(e) => setNovaSenha(e.target.value)}
-          placeholder="Minimo de 8 caracteres"
-          autoComplete="new-password"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-800 shadow-sm transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
+      {etapaRecuperacao === "solicitar" && (
+        <div className="mb-6">
+          <p className="mb-2 block text-sm font-semibold text-gray-700">
+            Receber codigo por
+          </p>
+          <div className="grid grid-cols-2 gap-2 rounded-xl bg-gray-50 p-1">
+            {[
+              { valor: "email", label: "E-mail" },
+              { valor: "sms", label: "SMS" },
+            ].map((opcao) => (
+              <button
+                key={opcao.valor}
+                type="button"
+                onClick={() => setCanalRecuperacao(opcao.valor)}
+                className={`rounded-lg px-3 py-2 text-sm font-bold transition ${
+                  canalRecuperacao === opcao.valor
+                    ? "bg-blue-400 text-white shadow-sm"
+                    : "text-gray-500 hover:bg-white"
+                }`}
+              >
+                {opcao.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
-      <div className="mb-6">
-        <label className="mb-2 block text-sm font-semibold text-gray-700">
-          Confirmar nova senha
-        </label>
-        <input
-          type="password"
-          value={confirmarNovaSenha}
-          onChange={(e) => setConfirmarNovaSenha(e.target.value)}
-          placeholder="Repita a nova senha"
-          autoComplete="new-password"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-800 shadow-sm transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
+      {etapaRecuperacao === "confirmar" && (
+        <>
+          <div className="mb-5 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+            <p className="text-sm font-semibold text-blue-700">
+              Codigo solicitado por {canalRecuperacao === "sms" ? "SMS" : "e-mail"}.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setEtapaRecuperacao("solicitar");
+                setMensagem("");
+                setErro("");
+              }}
+              className="mt-1 text-xs font-bold text-blue-600 hover:underline"
+            >
+              Escolher outro canal
+            </button>
+          </div>
 
-      <div className="mb-6">
-        <label className="mb-2 block text-sm font-semibold text-gray-700">
-          Codigo de recuperacao
-        </label>
-        <input
-          type="password"
-          value={codigoRecuperacao}
-          onChange={(e) => setCodigoRecuperacao(e.target.value)}
-          placeholder="Codigo temporario enviado pela unidade"
-          autoComplete="one-time-code"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-800 shadow-sm transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
+          <div className="mb-5">
+            <label className="mb-2 block text-sm font-semibold text-gray-700">
+              Codigo recebido
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={codigoRecuperacao}
+              onChange={(e) => setCodigoRecuperacao(e.target.value)}
+              placeholder="000000"
+              autoComplete="one-time-code"
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-800 shadow-sm transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          <div className="mb-5">
+            <label className="mb-2 block text-sm font-semibold text-gray-700">
+              Nova senha
+            </label>
+            <input
+              type="password"
+              value={novaSenha}
+              onChange={(e) => setNovaSenha(e.target.value)}
+              placeholder="Minimo de 8 caracteres"
+              autoComplete="new-password"
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-800 shadow-sm transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="mb-2 block text-sm font-semibold text-gray-700">
+              Confirmar nova senha
+            </label>
+            <input
+              type="password"
+              value={confirmarNovaSenha}
+              onChange={(e) => setConfirmarNovaSenha(e.target.value)}
+              placeholder="Repita a nova senha"
+              autoComplete="new-password"
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-800 shadow-sm transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+        </>
+      )}
 
       {aviso}
 
@@ -267,8 +371,25 @@ function Login() {
         disabled={carregando}
         className="w-full rounded-xl bg-blue-400 py-3.5 text-base font-bold text-white shadow-md transition-all duration-200 hover:bg-blue-500 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {carregando ? "Atualizando..." : "Atualizar senha"}
+        {carregando
+          ? etapaRecuperacao === "solicitar"
+            ? "Enviando..."
+            : "Atualizando..."
+          : etapaRecuperacao === "solicitar"
+            ? "Enviar codigo"
+            : "Atualizar senha"}
       </button>
+
+      {etapaRecuperacao === "confirmar" && (
+        <button
+          type="button"
+          onClick={aoSolicitarCodigoRecuperacao}
+          disabled={carregando}
+          className="mt-3 w-full rounded-xl border border-gray-200 py-3 text-center font-bold text-gray-500 transition hover:bg-gray-50 disabled:opacity-60"
+        >
+          Reenviar codigo
+        </button>
+      )}
 
       <button
         type="button"

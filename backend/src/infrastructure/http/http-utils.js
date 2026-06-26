@@ -1,4 +1,5 @@
 const { AppError } = require("../../domain/errors/app-error");
+const { montarHeadersSeguranca } = require("./http-security");
 
 function montarHeadersCors(req, env = {}) {
   const origin = req?.headers?.origin;
@@ -52,6 +53,7 @@ function enviarJson(res, statusCode, payload, req, env, opcoes = {}) {
   res.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
+    ...montarHeadersSeguranca(),
     ...montarHeadersCors(req, env),
     ...(opcoes.headers || {}),
   });
@@ -60,6 +62,7 @@ function enviarJson(res, statusCode, payload, req, env, opcoes = {}) {
 
 function enviarSemConteudo(res, req, env) {
   res.writeHead(204, {
+    ...montarHeadersSeguranca(),
     ...montarHeadersCors(req, env),
   });
   res.end();

@@ -158,12 +158,66 @@ async function testeCookieHttpOnlyEmProducao() {
   }
 }
 
+async function testeBloqueiaOrigemNaoPermitidaComCookie() {
+  const app = await criarServidorTeste({
+    usarCookieSessao: true,
+  });
+
+  try {
+    const resposta = await postJson(
+      app.baseUrl,
+      "/api/auth/login",
+      {
+        email: "master@teste.local",
+        senha: "SenhaTeste123!",
+      },
+      { Origin: "https://origem-nao-permitida.example" }
+    );
+    const dados = await resposta.json();
+
+    assert.equal(resposta.status, 403);
+    assert.equal(dados.codigo, "ORIGEM_NAO_PERMITIDA");
+  } finally {
+    await app.fechar();
+  }
+}
+
+async function testeRateLimitLogin() {
+  const app = await criarServidorTeste({
+    authRateLimitJanelaMs: 60 * 1000,
+    authRateLimitMaxTentativas: 2,
+  });
+
+  try {
+    await postJson(app.baseUrl, "/api/auth/login", {
+      email: "paciente@teste.local",
+      senha: "senha-incorreta",
+    });
+    await postJson(app.baseUrl, "/api/auth/login", {
+      email: "paciente@teste.local",
+      senha: "senha-incorreta",
+    });
+    const resposta = await postJson(app.baseUrl, "/api/auth/login", {
+      email: "paciente@teste.local",
+      senha: "SenhaTeste123!",
+    });
+    const dados = await resposta.json();
+
+    assert.equal(resposta.status, 429);
+    assert.equal(dados.codigo, "MUITAS_TENTATIVAS");
+  } finally {
+    await app.fechar();
+  }
+}
+
 async function testeAuditoriaHttpRegistraAcessos() {
   const app = await criarServidorTeste();
   try {
-    await fetch(`${app.baseUrl}/health`);
+    const resposta = await fetch(`${app.baseUrl}/health`);
     await new Promise((resolve) => setTimeout(resolve, 5));
 
+    assert.equal(resposta.headers.get("x-content-type-options"), "nosniff");
+    assert.equal(resposta.headers.get("referrer-policy"), "no-referrer");
     assert.equal(app.auditEventos.length >= 1, true);
     assert.equal(app.auditEventos[0].metodo, "GET");
     assert.equal(app.auditEventos[0].statusCode, 200);
@@ -261,5 +315,7 @@ module.exports = {
   testeRotasProtegidasExigemAutenticacao,
   testeAutorizacaoPorNivelDeAcesso,
   testeCookieHttpOnlyEmProducao,
+  testeBloqueiaOrigemNaoPermitidaComCookie,
+  testeRateLimitLogin,
   testeAuditoriaHttpRegistraAcessos,
 };

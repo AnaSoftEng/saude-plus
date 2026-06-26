@@ -323,6 +323,25 @@ async function testeCancelarConsultaLiberaAgendaReservada() {
   }
 }
 
+async function testeCancelarConsultaExigeMotivo() {
+  const caminhoDados = criarCaminhoTemporario("consulta-motivo-obrigatorio");
+  const consultaRepository = criarConsultaRepositoryMemory(consultasBase, { caminhoDados });
+  const cancelarConsulta = criarCancelarConsulta({ consultaRepository });
+
+  try {
+    await assert.rejects(
+      () =>
+        cancelarConsulta(
+          { consultaId: "consulta-1", motivo: "   " },
+          { usuario: { id: 1, nivel_acesso: "paciente", clinica_id: null } }
+        ),
+      { code: "MOTIVO_CANCELAMENTO_OBRIGATORIO" }
+    );
+  } finally {
+    fs.rmSync(caminhoDados, { force: true });
+  }
+}
+
 async function testeExcluirExameLiberaAgendaReservada() {
   const caminhoDados = criarCaminhoTemporario("exame-libera-agenda");
   const exameRepository = criarExameRepositoryMemory(examesBase, { caminhoDados });
@@ -358,5 +377,6 @@ module.exports = {
   testeAdminClinicaNaoExcluiExameDeOutraClinica,
   testeCorpoJsonMuitoGrandeRetorna413,
   testeCancelarConsultaLiberaAgendaReservada,
+  testeCancelarConsultaExigeMotivo,
   testeExcluirExameLiberaAgendaReservada,
 };

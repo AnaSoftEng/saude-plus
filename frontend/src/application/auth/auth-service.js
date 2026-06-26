@@ -1,5 +1,11 @@
 import { NIVEIS_ACESSO, usuarioTemNivel } from "../../domain/auth/niveis-acesso";
-import { autenticarUsuarioApi, encerrarSessaoApi, recuperarSenhaApi } from "../../infrastructure/api/auth-api";
+import {
+  autenticarUsuarioApi,
+  confirmarRecuperacaoSenhaApi,
+  encerrarSessaoApi,
+  recuperarSenhaApi,
+  solicitarRecuperacaoSenhaApi,
+} from "../../infrastructure/api/auth-api";
 import {
   existeUsuarioSessao,
   obterUsuarioSessao,
@@ -22,6 +28,22 @@ async function recuperarSenha(email, novaSenha, codigoRecuperacao = "") {
     return await recuperarSenhaApi(email, novaSenha, codigoRecuperacao);
   } catch (erro) {
     throw new Error(erro.message || "Nao foi possivel recuperar a senha.");
+  }
+}
+
+async function solicitarRecuperacaoSenha(email, canal = "") {
+  try {
+    return await solicitarRecuperacaoSenhaApi(email, canal);
+  } catch (erro) {
+    throw new Error(erro.message || "Nao foi possivel enviar o codigo.");
+  }
+}
+
+async function confirmarRecuperacaoSenha(email, codigoRecuperacao, novaSenha) {
+  try {
+    return await confirmarRecuperacaoSenhaApi(email, codigoRecuperacao, novaSenha);
+  } catch (erro) {
+    throw new Error(erro.message || "Nao foi possivel atualizar a senha.");
   }
 }
 
@@ -49,10 +71,12 @@ function temPermissao(nivelNecessario) {
 
 export {
   NIVEIS_ACESSO,
+  confirmarRecuperacaoSenha,
   realizarLogin,
   recuperarSenha,
   registrarUsuarioAutenticado,
   realizarLogout,
+  solicitarRecuperacaoSenha,
   estaAutenticado,
   obterUsuarioAtual,
   temPermissao,

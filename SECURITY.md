@@ -14,8 +14,13 @@ Nao abra issue publica com dados sensiveis. Envie o relato para o mantenedor do 
 - Nunca versionar `.env`, `backend/data/*.json`, logs, dumps ou backups.
 - `JWT_SECRET` deve ter pelo menos 32 caracteres em producao.
 - Senhas devem ser armazenadas apenas como hash `scrypt`.
-- Toda rota `/api`, exceto login, recuperacao de senha e cadastro publico de paciente, exige `Authorization: Bearer <token>`.
+- Toda rota `/api`, exceto login, recuperacao de senha e cadastro publico de paciente, exige sessao valida por cookie HttpOnly ou `Authorization: Bearer <token>` em ambiente controlado.
+- O frontend nao deve persistir token de sessao em `localStorage`.
 - CORS deve listar origens explicitas em `CORS_ORIGINS`; nao usar `*`.
+- Requisicoes de escrita com sessao por cookie devem ter `Origin` permitido.
+- Endpoints de autenticacao e recuperacao de senha devem ter limite de tentativas.
+- Recuperacao direta por `RECOVERY_SECRET` deve permanecer desabilitada fora de desenvolvimento.
+- Resultados de exames devem aceitar apenas tipos permitidos pelo backend: PDF, PNG, JPEG e TXT.
 - Contas de teste devem ser rotacionadas antes de qualquer homologacao com dados reais.
 
 ## Dados Sensiveis
@@ -35,5 +40,5 @@ npm run format:check
 
 ## Escopo Atual
 
-Este projeto ainda nao implementa envio real de e-mail, VAPID privado ou banco PostgreSQL em producao.
-Essas integracoes devem usar variaveis de ambiente e secrets gerenciados fora do repositorio.
+Este projeto implementa recuperacao de senha por e-mail/SMS via webhooks configurados por ambiente.
+VAPID privado, banco PostgreSQL e provedores externos devem usar variaveis de ambiente e secrets gerenciados fora do repositorio.

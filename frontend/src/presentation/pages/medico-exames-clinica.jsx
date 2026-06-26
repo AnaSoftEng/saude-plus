@@ -359,7 +359,7 @@ function MedicoExamesClinica() {
                 <input
                   type="file"
                   multiple
-                  accept=".pdf,image/*,.txt,.doc,.docx"
+                  accept=".pdf,image/png,image/jpeg,.txt,text/plain"
                   onChange={(evento) => setArquivosUpload(arquivosParaLista(evento.target.files))}
                   className="mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200"
                 />

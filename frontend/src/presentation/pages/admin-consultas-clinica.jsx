@@ -621,7 +621,7 @@ function AdminConsultasClinica() {
                 <input
                   type="file"
                   multiple
-                  accept=".pdf,image/*,.txt,.doc,.docx"
+                  accept=".pdf,image/png,image/jpeg,.txt,text/plain"
                   onChange={(evento) =>
                     setArquivosUploadConsulta(arquivosParaLista(evento.target.files))
                   }

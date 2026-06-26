@@ -7,8 +7,10 @@ const {
   montarCookieSessaoExpirada,
   tratarErro,
 } = require("./http-utils");
+const { exigirOrigemSegura } = require("./http-security");
 const { NIVEIS_ACESSO, temNivelNecessario } = require("../../domain/value-objects/niveis-acesso");
 const { AppError } = require("../../domain/errors/app-error");
+const { criarRateLimiter } = require("../security/rate-limiter");
 const { verificarTokenSessao } = require("../security/tokens");
 
 function normalizarPath(pathname) {
@@ -127,7 +129,19 @@ function registrarAcesso(req, res, iniciadoEm, auditRepository) {
     });
 }
 
+function obterIpCliente(req) {
+  const encaminhado = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+  return encaminhado || req.socket?.remoteAddress || "ip-desconhecido";
+}
+
 function criarServidorHttp(useCases, env = {}, opcoes = {}) {
+  const authRateLimiter =
+    opcoes.authRateLimiter ||
+    criarRateLimiter({
+      janelaMs: env.authRateLimitJanelaMs,
+      maximoTentativas: env.authRateLimitMaxTentativas,
+    });
+
   return http.createServer(async (req, res) => {
     const iniciadoEm = Date.now();
     res.on("finish", () => registrarAcesso(req, res, iniciadoEm, opcoes.auditRepository));
@@ -138,6 +152,8 @@ function criarServidorHttp(useCases, env = {}, opcoes = {}) {
         return;
       }
 
+      exigirOrigemSegura(req, env);
+
       const url = new URL(req.url, "http://localhost");
       const pathname = normalizarPath(url.pathname);
 
@@ -147,6 +163,7 @@ function criarServidorHttp(useCases, env = {}, opcoes = {}) {
       }
 
       if (req.method === "POST" && pathname === "/api/auth/login") {
+        authRateLimiter.consumir(`login:${obterIpCliente(req)}`);
         const body = await lerJson(req, env);
         const resultado = await useCases.autenticarUsuario(body);
         req.usuarioAutenticado = resultado.usuario;
@@ -174,8 +191,26 @@ function criarServidorHttp(useCases, env = {}, opcoes = {}) {
       }
 
       if (req.method === "POST" && pathname === "/api/auth/recuperar-senha") {
+        authRateLimiter.consumir(`recuperar-senha-confirmar:${obterIpCliente(req)}`);
         const body = await lerJson(req, env);
-        const resultado = await useCases.recuperarSenha(body);
+        const confirmar = useCases.confirmarRecuperacaoSenha || useCases.recuperarSenha;
+        const resultado = await confirmar(body);
+        enviarJson(res, 200, resultado, req, env);
+        return;
+      }
+
+      if (req.method === "POST" && pathname === "/api/auth/recuperar-senha/solicitar") {
+        authRateLimiter.consumir(`recuperar-senha-solicitar:${obterIpCliente(req)}`);
+        const body = await lerJson(req, env);
+        const resultado = await useCases.solicitarRecuperacaoSenha(body);
+        enviarJson(res, 200, resultado, req, env);
+        return;
+      }
+
+      if (req.method === "POST" && pathname === "/api/auth/recuperar-senha/confirmar") {
+        authRateLimiter.consumir(`recuperar-senha-confirmar:${obterIpCliente(req)}`);
+        const body = await lerJson(req, env);
+        const resultado = await useCases.confirmarRecuperacaoSenha(body);
         enviarJson(res, 200, resultado, req, env);
         return;
       }

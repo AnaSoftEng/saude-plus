@@ -11,6 +11,7 @@ import {
 
 beforeEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
 });
 
 test("salva e remove usuario e token da sessao", () => {
@@ -19,6 +20,7 @@ test("salva e remove usuario e token da sessao", () => {
   expect(existeUsuarioSessao()).toBe(true);
   expect(obterUsuarioSessao()).toEqual({ id: 1, nome: "Paciente" });
   expect(obterTokenSessao()).toBe("token-local");
+  expect(localStorage.getItem(CHAVE_TOKEN)).toBeNull();
 
   removerUsuarioSessao();
 
@@ -27,10 +29,10 @@ test("salva e remove usuario e token da sessao", () => {
 });
 
 test("limpa sessao corrompida em vez de quebrar a aplicacao", () => {
-  localStorage.setItem(CHAVE_USUARIO, "{json-invalido");
-  localStorage.setItem(CHAVE_TOKEN, "token-local");
+  sessionStorage.setItem(CHAVE_USUARIO, "{json-invalido");
+  sessionStorage.setItem(CHAVE_TOKEN, "token-local");
 
   expect(obterUsuarioSessao()).toBeNull();
-  expect(localStorage.getItem(CHAVE_USUARIO)).toBeNull();
-  expect(localStorage.getItem(CHAVE_TOKEN)).toBeNull();
+  expect(sessionStorage.getItem(CHAVE_USUARIO)).toBeNull();
+  expect(sessionStorage.getItem(CHAVE_TOKEN)).toBeNull();
 });

@@ -54,8 +54,21 @@ function carregarEnv() {
       .filter(Boolean),
     tokenTtlSegundos: Number(process.env.TOKEN_TTL_SEGUNDOS || 60 * 60 * 8),
     requestBodyLimitBytes: Number(process.env.REQUEST_BODY_LIMIT_BYTES || 10 * 1024 * 1024),
+    authRateLimitJanelaMs: Number(process.env.AUTH_RATE_LIMIT_JANELA_MS || 15 * 60 * 1000),
+    authRateLimitMaxTentativas: Number(process.env.AUTH_RATE_LIMIT_MAX_TENTATIVAS || 20),
     relatoriosDebug: process.env.RELATORIOS_DEBUG === "true",
     recoverySecret,
+    passwordRecoveryCodeTtlMinutes: Number(process.env.PASSWORD_RECOVERY_CODE_TTL_MINUTES || 10),
+    passwordRecoveryMaxAttempts: Number(process.env.PASSWORD_RECOVERY_MAX_ATTEMPTS || 5),
+    passwordRecoveryResendIntervalSeconds: Number(
+      process.env.PASSWORD_RECOVERY_RESEND_INTERVAL_SECONDS || 45
+    ),
+    passwordRecoveryEmailWebhookUrl: process.env.PASSWORD_RECOVERY_EMAIL_WEBHOOK_URL || "",
+    passwordRecoverySmsWebhookUrl: process.env.PASSWORD_RECOVERY_SMS_WEBHOOK_URL || "",
+    permitirRecuperacaoSenhaDireta:
+      process.env.ALLOW_DIRECT_PASSWORD_RECOVERY == null
+        ? nodeEnv !== "production"
+        : process.env.ALLOW_DIRECT_PASSWORD_RECOVERY === "true",
     usarCookieSessao: nodeEnv === "production" || process.env.AUTH_COOKIE_ENABLED === "true",
     sessionCookieName: process.env.SESSION_COOKIE_NAME || "saude_token",
     cookieSameSite: process.env.COOKIE_SAMESITE || (nodeEnv === "production" ? "Lax" : "Lax"),

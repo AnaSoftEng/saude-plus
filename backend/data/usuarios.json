@@ -2,17 +2,17 @@
   {
     "id": 1,
     "nome": "Ana Paula Souza",
-    "email": "anapaulasouza@outlook.com",
-    "senha_hash": "scrypt$16384$8$1$RfJ39JAMRFqpuVO-LMQqNA$GBqSvNrIcIRsZJHoYiWhFyMWjGIWRVF2XGtpnylAftUGA5h5t7A97Iq-neBj87JM0shOnhTJqQmSXm29n5UOFw",
+    "email": "paciente@teste.com",
+    "senha_hash": "scrypt$16384$8$1$NUbrH5YjpbHuPyKib7BOPA$VFyFOT9Ljj6RTVsMch99-fQ9FN-kp_KFpK-fJ8gcUcp9pwAFhYCYerD-OmVoxyu8VlgiHb-_3_5BnOVY2eIFCQ",
     "nivel_acesso": "paciente",
     "clinica_id": null,
     "status": "ativo"
   },
   {
     "id": 2,
-    "nome": "Hospital Nossa Senhora de Nazareth",
-    "email": "admin@hsnazareth.com",
-    "senha_hash": "scrypt$16384$8$1$G0fC3Qgpq9tVaOEKu8CaKA$5S9Ly9Du7uNOU_9NtAaDKWTJGw0mr50H2fgE-L7HdhocRAS2yf4Yp_Tu3waNtue0us5ZjVmVHexkjAji6o_voA",
+    "nome": "Admin Clinica",
+    "email": "admin@teste.com",
+    "senha_hash": "scrypt$16384$8$1$LxvxzqfxZ9ZD30PcOqlmBg$TvUMLkmws56OAG1fr8FxDpzH_vpMUHm3Kl04usdQdHbAPAIk-QHyEVcFF64X-wmxoZAokwhnW-jYR-hOfUIVkw",
     "nivel_acesso": "admin_clinica",
     "clinica_id": 1,
     "status": "ativo"
@@ -20,8 +20,8 @@
   {
     "id": 3,
     "nome": "Admin Master",
-    "email": "admin@sistema.com",
-    "senha_hash": "scrypt$16384$8$1$QZ2XToNhzC4hzxP3youHQA$vjfpKhtXq1gDrSZ_XLu_ti5XKIme2DQxjuhcNBZqKOlriwrxGTAdyNyZWpWkrGfQcIMw55sPYarIUVhEuNFvjg",
+    "email": "master@teste.com",
+    "senha_hash": "scrypt$16384$8$1$RetZfSwdKJ0LrjnFdqVHxQ$p0SFGNTCddtVeK5CQ83mPqSzgBXeM5Luuo3oOIkTzlrkxPx3D1a9bsvCSU4Dt13D9TvOBEdqbxndcNJPL3y69Q",
     "nivel_acesso": "admin_master",
     "clinica_id": null,
     "status": "ativo"
@@ -29,8 +29,8 @@
   {
     "id": 4,
     "nome": "Roberto Lima",
-    "email": "robertolima@hsnazareth.com",
-    "senha_hash": "scrypt$16384$8$1$vpccIKeYlN--53wGIlF87A$Z0-bOvsMh86G1W0eFN9j4k8AQVUkgtmVZDxkXYdzAY2k0JTPbTAw5Ef5Z8yf5c6alLmSzUrscqR_s7oA_LRnSQ",
+    "email": "medico@teste.com",
+    "senha_hash": "scrypt$16384$8$1$kCBScvHkgi5oFJYVr05wKw$ReqoIMtH_o01nEC_BtoUqhzCV5lxMSseK-JWY4p0ARKhMZ_wxUkj813UlPQe0VDs88jffbAAGsP9Ev9QSf358Q",
     "nivel_acesso": "medico",
     "clinica_id": 1,
     "status": "ativo"

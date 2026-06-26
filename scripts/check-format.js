@@ -7,6 +7,7 @@ const IGNORAR = new Set([
   ".tmp-chrome-favicon",
   ".tmp-icon-render",
   "node_modules",
+  "node_modules.offline-backup",
   "build",
   "coverage",
   "data",

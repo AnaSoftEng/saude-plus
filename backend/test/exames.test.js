@@ -69,6 +69,96 @@ async function testeAnexarMultiplosArquivosResultadoExame() {
   assert.equal(exameRepository.registros[1].resultado_disponivel, true);
 }
 
+async function testeBloqueiaTipoArquivoResultadoNaoPermitido() {
+  const exameRepository = criarRepositorioExamesFake();
+  const anexarResultadoExame = criarAnexarResultadoExame({ exameRepository });
+
+  await assert.rejects(
+    () =>
+      anexarResultadoExame({
+        exameId: "exame-1",
+        dadosResultado: {
+          arquivos: [
+            {
+              nomeArquivo: "resultado.html",
+              arquivoDataUrl: "data:text/html;base64,PGgxPk9pPC9oMT4=",
+              tipoArquivo: "text/html",
+              tamanhoArquivo: 20,
+            },
+          ],
+        },
+      }),
+    { code: "ARQUIVO_TIPO_NAO_PERMITIDO" }
+  );
+}
+
+async function testeBloqueiaArquivoResultadoComExtensaoDivergente() {
+  const exameRepository = criarRepositorioExamesFake();
+  const anexarResultadoExame = criarAnexarResultadoExame({ exameRepository });
+
+  await assert.rejects(
+    () =>
+      anexarResultadoExame({
+        exameId: "exame-1",
+        dadosResultado: {
+          arquivos: [
+            {
+              nomeArquivo: "resultado.png",
+              arquivoDataUrl: "data:application/pdf;base64,AAAA",
+              tipoArquivo: "application/pdf",
+              tamanhoArquivo: 20,
+            },
+          ],
+        },
+      }),
+    { code: "ARQUIVO_EXTENSAO_INVALIDA" }
+  );
+}
+
+async function testeBloqueiaArquivoResultadoComConteudoDivergente() {
+  const exameRepository = criarRepositorioExamesFake();
+  const anexarResultadoExame = criarAnexarResultadoExame({ exameRepository });
+
+  await assert.rejects(
+    () =>
+      anexarResultadoExame({
+        exameId: "exame-1",
+        dadosResultado: {
+          arquivos: [
+            {
+              nomeArquivo: "resultado.pdf",
+              arquivoDataUrl: "data:image/png;base64,AAAA",
+              tipoArquivo: "application/pdf",
+              tamanhoArquivo: 20,
+            },
+          ],
+        },
+      }),
+    { code: "ARQUIVO_CONTEUDO_INVALIDO" }
+  );
+}
+
+async function testeSanitizaNomeArquivoResultado() {
+  const exameRepository = criarRepositorioExamesFake();
+  const anexarResultadoExame = criarAnexarResultadoExame({ exameRepository });
+
+  const resultado = await anexarResultadoExame({
+    exameId: "exame-1",
+    dadosResultado: {
+      arquivos: [
+        {
+          nomeArquivo: "../laudo:final?.pdf",
+          arquivoDataUrl: "data:application/pdf;base64,AAAA",
+          tipoArquivo: "application/pdf",
+          tamanhoArquivo: 20,
+        },
+      ],
+    },
+  });
+
+  assert.equal(resultado.resultado_nome_arquivo, "..-laudo-final-.pdf");
+}
+
 function criarUsuarioRepositoryFake() {
   const usuarios = new Map([
     [1, { id: 1, nome: "Paciente Teste", nivel_acesso: "paciente", status: "ativo" }],
@@ -190,6 +280,10 @@ async function testeExameNaoDuplicaHorarioDeConsulta() {
 
 module.exports = {
   testeAnexarMultiplosArquivosResultadoExame,
+  testeBloqueiaTipoArquivoResultadoNaoPermitido,
+  testeBloqueiaArquivoResultadoComExtensaoDivergente,
+  testeBloqueiaArquivoResultadoComConteudoDivergente,
+  testeSanitizaNomeArquivoResultado,
   testeConsultaNaoDuplicaHorarioDeExame,
   testeExameNaoDuplicaHorarioDeConsulta,
 };

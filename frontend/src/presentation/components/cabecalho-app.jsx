@@ -28,7 +28,7 @@ function CabecalhoApp({
     <header
       className={juntarClasses(
         fixo && "sticky top-0 z-10",
-        "bg-blue-400 px-4 shadow-md sm:px-6 lg:px-8",
+        "border-b border-blue-300/40 bg-blue-500 px-4 shadow-sm shadow-blue-950/10 sm:px-6 lg:px-8",
         className
       )}
     >
@@ -57,7 +57,7 @@ function CabecalhoApp({
                 className={juntarClasses(
                   "active:opacity-80",
                   voltarSomenteIcone
-                    ? "flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30"
+                    ? "flex h-10 w-10 items-center justify-center rounded-lg bg-white/15 text-white ring-1 ring-white/20 transition hover:bg-white/25 focus:outline-none focus:ring-2 focus:ring-white/60"
                     : "text-sm font-semibold text-white"
                 )}
               >
@@ -81,7 +81,7 @@ function CabecalhoApp({
             >
               <div className="flex min-w-0 items-center gap-4 sm:gap-5">
                 {!aoVoltar && (
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white p-1.5 shadow-sm ring-1 ring-white/60">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white p-1.5 shadow-sm ring-1 ring-white/60">
                     <img
                       src="/icons/logo-saude-plus.png"
                       alt="Saúde+"
@@ -95,7 +95,7 @@ function CabecalhoApp({
                     <p
                       className={juntarClasses(
                         compacto ? "text-xs" : "text-sm",
-                        "text-blue-100"
+                        "font-semibold uppercase tracking-wide text-blue-100"
                       )}
                     >
                       {contexto}
@@ -116,7 +116,7 @@ function CabecalhoApp({
                   {descricao && (
                     <p
                       className={juntarClasses(
-                        compacto ? "mt-0.5 text-xs text-blue-100" : "mt-1 text-sm text-blue-100",
+                        compacto ? "mt-0.5 text-xs text-blue-50" : "mt-1 text-sm text-blue-50",
                         descricaoClassName
                       )}
                     >

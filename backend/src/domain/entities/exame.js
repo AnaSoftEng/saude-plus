@@ -1,22 +1,11 @@
 const { AppError } = require("../errors/app-error");
 const validar = require("../../infrastructure/security/validacao");
-
-const TAMANHO_MAXIMO_ARQUIVO_BYTES = 2 * 1024 * 1024;
-const TAMANHO_MAXIMO_DATA_URL = 3 * 1024 * 1024;
+const { validarArquivoResultado } = require("../value-objects/arquivo-resultado");
 
 function normalizarCategoriaDocumento(categoria) {
   const chave = String(categoria || "").toLowerCase();
   if (["exame", "prontuario", "atestado"].includes(chave)) return chave;
   return "exame";
-}
-
-function validarArquivoResultado(dados) {
-  const tamanhoArquivo = Number(dados.resultado_arquivo_tamanho || 0);
-  const dataUrl = String(dados.resultado_arquivo_data_url || "");
-
-  if (tamanhoArquivo > TAMANHO_MAXIMO_ARQUIVO_BYTES || dataUrl.length > TAMANHO_MAXIMO_DATA_URL) {
-    throw new AppError("O arquivo do resultado excede o tamanho permitido.", 413, "ARQUIVO_MUITO_GRANDE");
-  }
 }
 
 function criarExame(dados) {
@@ -27,7 +16,17 @@ function criarExame(dados) {
     throw new AppError(`Campo obrigatorio ausente: ${faltando}.`, 422, "EXAME_INVALIDO");
   }
 
-  validarArquivoResultado(dados);
+  const arquivoResultado = dados.resultado_arquivo_data_url
+    ? validarArquivoResultado(
+        {
+          resultado_nome_arquivo: dados.resultado_nome_arquivo || "resultado.pdf",
+          resultado_arquivo_data_url: dados.resultado_arquivo_data_url,
+          resultado_arquivo_tipo: dados.resultado_arquivo_tipo,
+          resultado_arquivo_tamanho: dados.resultado_arquivo_tamanho,
+        },
+        { fallbackNome: dados.resultado_nome_arquivo || "resultado.pdf" }
+      )
+    : null;
 
   return {
     id: dados.id,
@@ -47,14 +46,14 @@ function criarExame(dados) {
     status: dados.status || "agendado",
     resultado_disponivel: dados.resultado_disponivel === true,
     resultado_categoria: normalizarCategoriaDocumento(dados.resultado_categoria),
-    resultado_nome_arquivo: dados.resultado_nome_arquivo || "",
+    resultado_nome_arquivo: arquivoResultado?.nomeArquivo || dados.resultado_nome_arquivo || "",
     resultado_descricao: dados.resultado_descricao || "",
     resultado_anexado_em: dados.resultado_anexado_em || "",
     resultado_anexado_por: dados.resultado_anexado_por || "",
     resultado_anexado_por_nome: dados.resultado_anexado_por_nome || "",
-    resultado_arquivo_data_url: dados.resultado_arquivo_data_url || "",
-    resultado_arquivo_tipo: dados.resultado_arquivo_tipo || "",
-    resultado_arquivo_tamanho: Number(dados.resultado_arquivo_tamanho || 0),
+    resultado_arquivo_data_url: arquivoResultado?.arquivoDataUrl || dados.resultado_arquivo_data_url || "",
+    resultado_arquivo_tipo: arquivoResultado?.tipoArquivo || dados.resultado_arquivo_tipo || "",
+    resultado_arquivo_tamanho: Number(arquivoResultado?.tamanhoArquivo || dados.resultado_arquivo_tamanho || 0),
     criado_em: dados.criado_em || new Date().toISOString(),
   };
 }

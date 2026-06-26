@@ -45,17 +45,22 @@ async function liberarAgenda(agendaRepository, agendaId) {
 
 function criarCancelarConsulta({ consultaRepository, agendaRepository = null }) {
   return async function cancelarConsulta({ consultaId, motivo }, contexto = {}) {
+    const motivoNormalizado = String(motivo || "").trim();
     const consulta = await buscarConsultaPorId(consultaRepository, consultaId);
 
     if (!consulta) {
       throw new AppError("Consulta nao encontrada.", 404, "CONSULTA_NAO_ENCONTRADA");
     }
 
+    if (!motivoNormalizado) {
+      throw new AppError("Informe o motivo do cancelamento.", 422, "MOTIVO_CANCELAMENTO_OBRIGATORIO");
+    }
+
     if (contexto.usuario && !usuarioPodeCancelarConsulta(contexto.usuario, consulta)) {
       throw new AppError("Voce nao tem permissao para cancelar esta consulta.", 403, "ACESSO_NEGADO");
     }
 
-    const resultado = await consultaRepository.cancelar(consultaId, motivo);
+    const resultado = await consultaRepository.cancelar(consultaId, motivoNormalizado);
     await liberarAgenda(agendaRepository, consulta.agenda_id);
 
     return resultado;

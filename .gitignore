@@ -1,4 +1,5 @@
 node_modules
+node_modules.offline-backup
 
 .env
 .env.*
@@ -8,6 +9,8 @@ node_modules
 !**/.env.example
 
 backend/data/*.json
+backend/data/
+*.tmp
 *.log
 backend-*.log
 

@@ -11,6 +11,7 @@
     "dev": "node scripts/start-dev.js",
     "frontend": "npm --workspace saude-plus-frontend run iniciar",
     "frontend:build": "npm --workspace saude-plus-frontend run compilar",
+    "frontend:serve": "node scripts/serve-frontend-build.js",
     "frontend:test": "npm --workspace saude-plus-frontend run testar --",
     "backend": "npm --workspace saude-plus-backend run start",
     "backend:check": "npm --workspace saude-plus-backend run check",

@@ -8,6 +8,22 @@ async function autenticarUsuarioApi(email, senha) {
   });
 }
 
+async function solicitarRecuperacaoSenhaApi(email, canal = "") {
+  return requisitarJson("/api/auth/recuperar-senha/solicitar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, canal }),
+  });
+}
+
+async function confirmarRecuperacaoSenhaApi(email, codigoRecuperacao, novaSenha) {
+  return requisitarJson("/api/auth/recuperar-senha/confirmar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, codigoRecuperacao, novaSenha }),
+  });
+}
+
 async function recuperarSenhaApi(email, novaSenha, codigoRecuperacao = "") {
   return requisitarJson("/api/auth/recuperar-senha", {
     method: "POST",
@@ -22,4 +38,10 @@ async function encerrarSessaoApi() {
   });
 }
 
-export { autenticarUsuarioApi, encerrarSessaoApi, recuperarSenhaApi };
+export {
+  autenticarUsuarioApi,
+  confirmarRecuperacaoSenhaApi,
+  encerrarSessaoApi,
+  recuperarSenhaApi,
+  solicitarRecuperacaoSenhaApi,
+};
