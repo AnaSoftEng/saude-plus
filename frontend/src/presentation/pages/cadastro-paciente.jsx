@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { realizarLogin } from "../../application/auth/auth-service";
 import { salvarUsuario } from "../../application/usuarios/usuarios-use-cases";
 import { buscarEnderecoPorCep } from "../../infrastructure/api/cep-api";
@@ -167,24 +167,24 @@ function CadastroPaciente() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 lg:flex">
-      <section className="hidden w-1/2 flex-col items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600 p-8 text-white lg:flex">
+    <div className="min-h-svh bg-gray-50 lg:flex">
+      <section className="hidden w-1/2 flex-col items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600 p-12 text-white lg:flex">
         <div className="text-center">
-          <LogoSaudePlus className="mx-auto mb-4 shadow-xl" size="lg" />
-          <h1 className="mb-2 text-4xl font-bold">Saúde+</h1>
-          <p className="mb-6 text-base text-blue-100">
+          <LogoSaudePlus className="mx-auto mb-6 shadow-xl" size="xl" />
+          <h1 className="mb-3 text-5xl font-bold text-white">Saúde+</h1>
+          <p className="mb-10 text-lg text-blue-100">
             Saúde na palma da mão
           </p>
-          <p className="mx-auto max-w-xs text-sm leading-6 text-blue-200">
+          <p className="mx-auto max-w-xs text-sm leading-relaxed text-blue-200">
             Crie sua conta para agendar consultas, acompanhar exames e acessar seus atendimentos em um só lugar.
           </p>
 
-          <div className="mx-auto mt-6 grid max-w-xs grid-cols-2 gap-2">
-            {["Cadastro rápido", "Consultas", "Exames", "Vida saudável"].map(
+          <div className="mx-auto mt-10 grid max-w-xs grid-cols-2 gap-3">
+            {["Qualidade de Vida", "Saúde Elevada", "Sua Melhor Versão", "Viva melhor"].map(
               (item) => (
                 <div
                   key={item}
-                  className="rounded-lg bg-white bg-opacity-20 px-3 py-2 text-sm font-medium text-white"
+                  className="flex items-center justify-center rounded-xl border border-white/70 bg-transparent px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-white/10"
                 >
                   {item}
                 </div>

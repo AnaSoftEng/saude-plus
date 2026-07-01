@@ -1,6 +1,6 @@
 import React from "react";
 import { CalendarDays, LayoutDashboard, TestTube2 } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 
 const ABAS_MENU = [
   {

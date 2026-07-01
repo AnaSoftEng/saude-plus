@@ -4,6 +4,7 @@ const path = require("path");
 const EXTENSOES = new Set([".js", ".jsx", ".json", ".md", ".css", ".html"]);
 const IGNORAR = new Set([
   ".git",
+  ".vercel",
   ".tmp-chrome-favicon",
   ".tmp-icon-render",
   "node_modules",

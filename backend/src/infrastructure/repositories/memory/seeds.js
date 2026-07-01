@@ -4,8 +4,8 @@ const usuariosSeed = [
   {
     id: 1,
     nome: "Ana Paula Souza",
-    email: "paciente@teste.com",
-    senha_hash: "scrypt$16384$8$1$CHvPQ6HpoRDFkO5KSsRuuQ$UdAyxdrgH7slH-wpnEeDOU2lb4OZvOK1qh56QVt6GE7vT3YgUF65cimAEt9dSZw5ZfrS-JDUHqIqQuuOOUiY3A",
+    email: "paciente@saudeplus.com",
+    senha_hash: "scrypt$16384$8$1$vXHijkHyJlsJgJMVAP_2EQ$_I-MxQGIltX2NqP9pnvG2sKJEH9TJwmO0VrkQpA4LZlx8fhSAHVDcNOLSvcoAoB-qZXnNxCgd1sV18HgEpVqDA",
     nivel_acesso: NIVEIS_ACESSO.PACIENTE,
     clinica_id: null,
     status: "ativo",
@@ -13,8 +13,8 @@ const usuariosSeed = [
   {
     id: 2,
     nome: "Admin Clinica",
-    email: "admin@teste.com",
-    senha_hash: "scrypt$16384$8$1$6-7ymote7gLSdCrn8IhMGw$frC74lgotYm3wK91bpj_hNalkMRS7qE1bzh3RsjFPV4gGU700hV6R15miuz6bEFNKXbU-NTJhir8yBMwN4wKOw",
+    email: "admin@saudeplus.com",
+    senha_hash: "scrypt$16384$8$1$vXHijkHyJlsJgJMVAP_2EQ$_I-MxQGIltX2NqP9pnvG2sKJEH9TJwmO0VrkQpA4LZlx8fhSAHVDcNOLSvcoAoB-qZXnNxCgd1sV18HgEpVqDA",
     nivel_acesso: NIVEIS_ACESSO.ADMIN_CLINICA,
     clinica_id: 1,
     status: "ativo",
@@ -22,8 +22,8 @@ const usuariosSeed = [
   {
     id: 3,
     nome: "Admin Master",
-    email: "master@teste.com",
-    senha_hash: "scrypt$16384$8$1$6i1wiUVZNDLT9sushfhklw$zrTZtjIhzNQg6xrl0EOKSCgqd2NEUO1ZZ2smpU56x0qMc0_iVlDJvTxl9EVMK9w_E-Fa81QZDMqnuh0Yh5Nz7w",
+    email: "master@saudeplus.com",
+    senha_hash: "scrypt$16384$8$1$vXHijkHyJlsJgJMVAP_2EQ$_I-MxQGIltX2NqP9pnvG2sKJEH9TJwmO0VrkQpA4LZlx8fhSAHVDcNOLSvcoAoB-qZXnNxCgd1sV18HgEpVqDA",
     nivel_acesso: NIVEIS_ACESSO.ADMIN_MASTER,
     clinica_id: null,
     status: "ativo",
@@ -31,8 +31,8 @@ const usuariosSeed = [
   {
     id: 4,
     nome: "Roberto Lima",
-    email: "medico@teste.com",
-    senha_hash: "scrypt$16384$8$1$XTPnto1nQSZvRTuljf_RHg$5DQbUTypZm4vxdM1-tP5kotnBmUH2fYJ8Htx8Dlrdvhf4vDOdXX4aHyKwmp-DovgKWM96qp686MEGWqBd4MsBw",
+    email: "medico@saudeplus.com",
+    senha_hash: "scrypt$16384$8$1$vXHijkHyJlsJgJMVAP_2EQ$_I-MxQGIltX2NqP9pnvG2sKJEH9TJwmO0VrkQpA4LZlx8fhSAHVDcNOLSvcoAoB-qZXnNxCgd1sV18HgEpVqDA",
     nivel_acesso: NIVEIS_ACESSO.MEDICO,
     clinica_id: 1,
     status: "ativo",

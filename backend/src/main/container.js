@@ -93,7 +93,11 @@ function criarContainer(env = {}) {
       recuperarSenha,
       solicitarRecuperacaoSenha: recuperarSenha.solicitarCodigo,
       confirmarRecuperacaoSenha: recuperarSenha.confirmarCodigo,
-      listarUsuarios: criarListarUsuarios({ usuarioRepository }),
+      listarUsuarios: criarListarUsuarios({
+        usuarioRepository,
+        consultaRepository,
+        exameRepository,
+      }),
       salvarUsuario: criarSalvarUsuario({ usuarioRepository }),
       listarClinicas: criarListarClinicas({ clinicaRepository }),
       obterClinica: criarObterClinica({ clinicaRepository }),

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ImagePlus, MapPin, Trash2, Upload } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ouvirConsultasAtualizadas } from "../../application/agenda/consultas-eventos";
 import {
   alternarStatusClinica,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import {
   confirmarRecuperacaoSenha,
   realizarLogin,
@@ -476,10 +476,10 @@ function Login() {
           </p>
 
           <div className="mx-auto mt-10 grid max-w-xs grid-cols-2 gap-3">
-            {["Bacaxá", "Itaúna", "Vilatur", "Sampaio Corrêa"].map((bairro) => (
+            {["Bacaxá", "Centro", "Sampaio Correia", "Vilatur"].map((bairro) => (
               <div
                 key={bairro}
-                className="rounded-xl bg-white bg-opacity-20 px-4 py-2 text-sm font-medium text-white"
+                className="flex items-center justify-center rounded-xl border border-white/70 bg-transparent px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-white/10"
               >
                 {bairro}
               </div>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import { listarHorariosAgenda } from "../../application/agenda/agendamento-use-cases";
 import { obterUsuarioAtual } from "../../application/auth/auth-service";
 import { criarAgendamentoExame } from "../../application/exames/exames-use-cases";

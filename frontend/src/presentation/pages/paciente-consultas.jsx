@@ -9,7 +9,7 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ouvirClinicasAtualizadas } from "../../application/clinicas/clinicas-eventos";
 import { buscarClinicaPorId, listarClinicas } from "../../application/clinicas/clinicas-use-cases";
 import { obterSnapshotDispositivo } from "../../infrastructure/device/use-dispositivo";

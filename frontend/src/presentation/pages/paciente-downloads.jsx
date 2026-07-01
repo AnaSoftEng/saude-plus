@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ClipboardList, FileText, Stethoscope, TestTube2 } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import {
   buscarHistoricoPaciente,
 } from "../../application/agenda/agendamento-use-cases";

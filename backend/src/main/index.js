@@ -8,6 +8,22 @@ const server = criarServidorHttp(container.useCases, env, {
   auditRepository: container.repositories.auditRepository,
 });
 
+server.on("error", async (erro) => {
+  if (container.pool) {
+    await container.pool.end().catch(() => {});
+  }
+
+  if (erro.code === "EADDRINUSE") {
+    console.error(
+      `A porta ${env.port} ja esta em uso. Encerre a instancia anterior do backend ou configure outra porta em PORT.`
+    );
+  } else {
+    console.error("Nao foi possivel iniciar o backend:", erro);
+  }
+
+  process.exit(1);
+});
+
 server.listen(env.port, () => {
   console.log(`Backend Saude+ ouvindo em http://localhost:${env.port}`);
 });

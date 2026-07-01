@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { ouvirClinicasAtualizadas } from "../../application/clinicas/clinicas-eventos";
 import { buscarClinicaPorId } from "../../application/clinicas/clinicas-use-cases";
 import CabecalhoApp from "../components/cabecalho-app";

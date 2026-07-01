@@ -12,10 +12,10 @@ on conflict (id) do nothing;
 insert into usuarios
   (id, nome, email, senha_hash, nivel_acesso, clinica_id, status)
 values
-  (1, 'Ana Paula Souza', 'paciente@teste.com', 'scrypt$16384$8$1$CHvPQ6HpoRDFkO5KSsRuuQ$UdAyxdrgH7slH-wpnEeDOU2lb4OZvOK1qh56QVt6GE7vT3YgUF65cimAEt9dSZw5ZfrS-JDUHqIqQuuOOUiY3A', 'paciente', null, 'ativo'),
-  (2, 'Admin Clinica', 'admin@teste.com', 'scrypt$16384$8$1$6-7ymote7gLSdCrn8IhMGw$frC74lgotYm3wK91bpj_hNalkMRS7qE1bzh3RsjFPV4gGU700hV6R15miuz6bEFNKXbU-NTJhir8yBMwN4wKOw', 'admin_clinica', 1, 'ativo'),
-  (3, 'Admin Master', 'master@teste.com', 'scrypt$16384$8$1$6i1wiUVZNDLT9sushfhklw$zrTZtjIhzNQg6xrl0EOKSCgqd2NEUO1ZZ2smpU56x0qMc0_iVlDJvTxl9EVMK9w_E-Fa81QZDMqnuh0Yh5Nz7w', 'admin_master', null, 'ativo'),
-  (4, 'Roberto Lima', 'medico@teste.com', 'scrypt$16384$8$1$XTPnto1nQSZvRTuljf_RHg$5DQbUTypZm4vxdM1-tP5kotnBmUH2fYJ8Htx8Dlrdvhf4vDOdXX4aHyKwmp-DovgKWM96qp686MEGWqBd4MsBw', 'medico', 1, 'ativo')
+  (1, 'Ana Paula Souza', 'paciente@saudeplus.com', 'scrypt$16384$8$1$vXHijkHyJlsJgJMVAP_2EQ$_I-MxQGIltX2NqP9pnvG2sKJEH9TJwmO0VrkQpA4LZlx8fhSAHVDcNOLSvcoAoB-qZXnNxCgd1sV18HgEpVqDA', 'paciente', null, 'ativo'),
+  (2, 'Admin Clinica', 'admin@saudeplus.com', 'scrypt$16384$8$1$vXHijkHyJlsJgJMVAP_2EQ$_I-MxQGIltX2NqP9pnvG2sKJEH9TJwmO0VrkQpA4LZlx8fhSAHVDcNOLSvcoAoB-qZXnNxCgd1sV18HgEpVqDA', 'admin_clinica', 1, 'ativo'),
+  (3, 'Admin Master', 'master@saudeplus.com', 'scrypt$16384$8$1$vXHijkHyJlsJgJMVAP_2EQ$_I-MxQGIltX2NqP9pnvG2sKJEH9TJwmO0VrkQpA4LZlx8fhSAHVDcNOLSvcoAoB-qZXnNxCgd1sV18HgEpVqDA', 'admin_master', null, 'ativo'),
+  (4, 'Roberto Lima', 'medico@saudeplus.com', 'scrypt$16384$8$1$vXHijkHyJlsJgJMVAP_2EQ$_I-MxQGIltX2NqP9pnvG2sKJEH9TJwmO0VrkQpA4LZlx8fhSAHVDcNOLSvcoAoB-qZXnNxCgd1sV18HgEpVqDA', 'medico', 1, 'ativo')
 on conflict (id) do nothing;
 
 select setval('clinicas_id_seq', greatest((select max(id) from clinicas), 1), true);

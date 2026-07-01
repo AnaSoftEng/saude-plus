@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ArrowRight, CalendarDays, TestTube2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { buscarHistoricoPaciente } from "../../application/agenda/agendamento-use-cases";
 import { ouvirConsultasAtualizadas } from "../../application/agenda/consultas-eventos";
 import { obterUsuarioAtual } from "../../application/auth/auth-service";

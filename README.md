@@ -142,7 +142,7 @@ Scripts da raiz:
 Scripts do backend:
 
 - `npm --prefix backend run db:migrate`: executa migrations SQL.
-- `npm --prefix backend run user:password -- email@teste.com NovaSenhaForte`: redefine senha local de um usuario seed.
+- `npm --prefix backend run user:password -- email@saudeplus.com NovaSenhaForte`: redefine senha local de um usuario seed.
 
 ## Recuperacao De Senha
 
@@ -274,15 +274,17 @@ Observacao: em producao, use PostgreSQL. O modo `memory` funciona para desenvolv
 
 Emails demonstrativos disponiveis nos seeds locais:
 
-- `anapaulasouza@outlook.com`
-- `admin@teste.com`
-- `master@teste.com`
-- `medico@teste.com`
+- `paciente@saudeplus.com`
+- `admin@saudeplus.com`
+- `master@saudeplus.com`
+- `medico@saudeplus.com`
+
+Senha comum das contas de teste: `teste12345`.
 
 As senhas dos seeds ficam armazenadas como hash. Para definir uma senha local:
 
 ```bash
-npm --prefix backend run user:password -- paciente@teste.com MinhaSenhaLocalForte
+npm --prefix backend run user:password -- paciente@saudeplus.com teste12345
 ```
 
 ## Rotas Principais

@@ -4,31 +4,47 @@
 // Inclui proteção por nível de acesso
 
 
-import React, { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import React, { Suspense, lazy, useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 
 // --- Importação das Telas ---
-import Login from "../../presentation/pages/login";
-import CadastroPaciente from "../../presentation/pages/cadastro-paciente";
-import HomePaciente from "../../presentation/pages/home-paciente";
-import HomeMaster from "../../presentation/pages/home-master";
-import HomeAdmin from "../../presentation/pages/home-admin";
-import HomeMedico from "../../presentation/pages/home-medico";
-import MedicoConsultasClinica from "../../presentation/pages/medico-consultas-clinica";
-import MedicoExamesClinica from "../../presentation/pages/medico-exames-clinica";
-import AgendarConsulta from "../../presentation/pages/agendar-consulta";
-import AgendarExame from "../../presentation/pages/agendar-exame";
-import AdminConsultasClinica from "../../presentation/pages/admin-consultas-clinica";
-import AdminExamesClinica from "../../presentation/pages/admin-exames-clinica";
-import PacienteConsultas from "../../presentation/pages/paciente-consultas";
-import PacienteDownloads from "../../presentation/pages/paciente-downloads";
-import PacienteExames from "../../presentation/pages/paciente-exames";
-import PacienteHistorico from "../../presentation/pages/paciente-historico";
-import PacientePerfil from "../../presentation/pages/paciente-perfil";
-import PacienteClinicaDetalhes from "../../presentation/pages/paciente-clinica-detalhes";
-import AdminGerenciarClinicas from "../../presentation/pages/admin-gerenciar-clinicas";
-import AdminGerenciarUsuarios from "../../presentation/pages/admin-gerenciar-usuarios";
-import AdminRelatoriosSistema from "../../presentation/pages/admin-relatorios-sistema";
+const Login = lazy(() => import("../../presentation/pages/login"));
+const CadastroPaciente = lazy(() => import("../../presentation/pages/cadastro-paciente"));
+const HomePaciente = lazy(() => import("../../presentation/pages/home-paciente"));
+const HomeMaster = lazy(() => import("../../presentation/pages/home-master"));
+const HomeAdmin = lazy(() => import("../../presentation/pages/home-admin"));
+const HomeMedico = lazy(() => import("../../presentation/pages/home-medico"));
+const MedicoConsultasClinica = lazy(() =>
+  import("../../presentation/pages/medico-consultas-clinica")
+);
+const MedicoExamesClinica = lazy(() =>
+  import("../../presentation/pages/medico-exames-clinica")
+);
+const AgendarConsulta = lazy(() => import("../../presentation/pages/agendar-consulta"));
+const AgendarExame = lazy(() => import("../../presentation/pages/agendar-exame"));
+const AdminConsultasClinica = lazy(() =>
+  import("../../presentation/pages/admin-consultas-clinica")
+);
+const AdminExamesClinica = lazy(() =>
+  import("../../presentation/pages/admin-exames-clinica")
+);
+const PacienteConsultas = lazy(() => import("../../presentation/pages/paciente-consultas"));
+const PacienteDownloads = lazy(() => import("../../presentation/pages/paciente-downloads"));
+const PacienteExames = lazy(() => import("../../presentation/pages/paciente-exames"));
+const PacienteHistorico = lazy(() => import("../../presentation/pages/paciente-historico"));
+const PacientePerfil = lazy(() => import("../../presentation/pages/paciente-perfil"));
+const PacienteClinicaDetalhes = lazy(() =>
+  import("../../presentation/pages/paciente-clinica-detalhes")
+);
+const AdminGerenciarClinicas = lazy(() =>
+  import("../../presentation/pages/admin-gerenciar-clinicas")
+);
+const AdminGerenciarUsuarios = lazy(() =>
+  import("../../presentation/pages/admin-gerenciar-usuarios")
+);
+const AdminRelatoriosSistema = lazy(() =>
+  import("../../presentation/pages/admin-relatorios-sistema")
+);
 import ModalNotificacoes from "../../presentation/components/modal-notificacoes";
 
 // --- Importação da lógica de autenticação ---
@@ -92,10 +108,19 @@ function RotaProtegida({ children, nivelNecessario }) {
  * Componente principal de rotas do Saúde+
  * Organiza todos os caminhos da aplicação
  */
+function CarregandoRota() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <p className="text-sm font-semibold text-gray-500">Carregando...</p>
+    </div>
+  );
+}
+
 function RotasPrincipais() {
   return (
     <BrowserRouter>
-      <Routes>
+      <Suspense fallback={<CarregandoRota />}>
+        <Routes>
         {/* Rota pública — Tela de Login */}
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<CadastroPaciente />} />
@@ -296,7 +321,8 @@ function RotasPrincipais() {
             </div>
           }
         />
-      </Routes>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

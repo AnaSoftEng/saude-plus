@@ -7,8 +7,10 @@ const { criarAnexarResultadoExame } = require("../src/application/exames/anexar-
 const { criarExcluirExame } = require("../src/application/exames/excluir-exame");
 const { criarListarExamesClinica } = require("../src/application/exames/listar-exames-clinica");
 const { criarListarExamesPaciente } = require("../src/application/exames/listar-exames-paciente");
+const { criarSalvarExamesClinica } = require("../src/application/exames/salvar-exames-clinica");
 const { criarListarConsultasClinica } = require("../src/application/consultas/listar-consultas-clinica");
 const { criarListarConsultasPaciente } = require("../src/application/consultas/listar-consultas-paciente");
+const { criarListarUsuarios } = require("../src/application/usuarios/listar-usuarios");
 const { criarSalvarUsuario } = require("../src/application/usuarios/salvar-usuario");
 const { criarServidorHttp } = require("../src/infrastructure/http/create-server");
 const { criarConsultaRepositoryMemory } = require("../src/infrastructure/repositories/memory/consulta-repository-memory");
@@ -107,7 +109,13 @@ async function criarServidorAuditoria(env = {}) {
     listarExamesPaciente: criarListarExamesPaciente({ exameRepository, usuarioRepository }),
     listarExamesClinica: criarListarExamesClinica({ exameRepository, usuarioRepository }),
     anexarResultadoExame: criarAnexarResultadoExame({ exameRepository }),
+    salvarExamesClinica: criarSalvarExamesClinica({ exameRepository }),
     excluirExame: criarExcluirExame({ exameRepository }),
+    listarUsuarios: criarListarUsuarios({
+      usuarioRepository,
+      consultaRepository,
+      exameRepository,
+    }),
   };
   const server = criarServidorHttp(useCases, envTeste);
 
@@ -280,6 +288,61 @@ async function testeAdminClinicaNaoExcluiExameDeOutraClinica() {
   }
 }
 
+async function testeAdminClinicaNaoEditaExameDeOutraClinicaEmMassa() {
+  const app = await criarServidorAuditoria();
+  try {
+    const resposta = await fetch(`${app.baseUrl}/api/exames?clinica=1`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token({ id: 2, nivel_acesso: "admin_clinica", clinica_id: 1 })}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        exames: [
+          {
+            id: "exame-2",
+            paciente_id: 5,
+            clinica_id: 1,
+            tipo: "Exame alterado indevidamente",
+            status: "liberado",
+          },
+        ],
+      }),
+    });
+    const dados = await resposta.json();
+
+    assert.equal(resposta.status, 403);
+    assert.equal(dados.codigo, "ACESSO_NEGADO");
+  } finally {
+    await app.fechar();
+  }
+}
+
+async function testeMedicoNaoListaPacienteSemVinculoComSuaClinica() {
+  const app = await criarServidorAuditoria();
+  try {
+    const resposta = await fetch(`${app.baseUrl}/api/usuarios`, {
+      headers: {
+        Authorization: `Bearer ${token({ id: 4, nivel_acesso: "medico", clinica_id: 1 })}`,
+      },
+    });
+    const dados = await resposta.json();
+    const ids = dados.map((usuario) => Number(usuario.id));
+
+    assert.equal(resposta.status, 200);
+    assert.equal(ids.includes(1), true);
+    assert.equal(ids.includes(5), false);
+    assert.equal(
+      dados.some(
+        (usuario) => usuario.email === "paciente2@teste.local" || usuario.id === 5
+      ),
+      false
+    );
+  } finally {
+    await app.fechar();
+  }
+}
+
 async function testeCorpoJsonMuitoGrandeRetorna413() {
   const app = await criarServidorAuditoria({ requestBodyLimitBytes: 20 });
   try {
@@ -375,6 +438,8 @@ module.exports = {
   testeMedicoNaoListaConsultasPorPacienteSemClinica,
   testeAdminClinicaNaoAnexaResultadoForaDaClinica,
   testeAdminClinicaNaoExcluiExameDeOutraClinica,
+  testeAdminClinicaNaoEditaExameDeOutraClinicaEmMassa,
+  testeMedicoNaoListaPacienteSemVinculoComSuaClinica,
   testeCorpoJsonMuitoGrandeRetorna413,
   testeCancelarConsultaLiberaAgendaReservada,
   testeCancelarConsultaExigeMotivo,
